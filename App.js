@@ -1,39 +1,42 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Alert } from 'react-native';
+import 'react-native-gesture-handler';
+import { StyleSheet, Text, View, Alert,TextInput,FlatList } from 'react-native';
 import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { loadAsync } from 'expo-font';
+import Home from './Screens/Home'
+import Settings from './Screens/Settings'
 
 export default class App extends Component {
   constructor(props)
   {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
-    loadAsync({
-      // Load a font `Montserrat` from a static resource
-      "fa-solid-900": require('./assets/fonts/fa-solid-900.ttf')
-    });
+    this.state = {
+      FontLoaded: false
+    };
   }
-  getStyles()
-  {
-    return StyleSheet.create({
-      container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-    });
-  }
-  handleClick(e)
-  {
-    Alert-alert("Titel254","Test25");
+  async componentDidMount() {
+    console.log(this.state.FontLoaded);
+    
+    if(this.state.FontLoaded === undefined || this.state.FontLoaded === false)
+    {
+      await loadAsync({
+        // Load a font `Montserrat` from a static resource
+        "fa-solid-900": require('./assets/fonts/fa-solid-900.ttf')
+      });
+      this.setState({FontLoaded: true});
+    }
   }
   render(){
+    const Stack = createStackNavigator();
     return (
-      <View style={this.getStyles().container}>
-        <Text onPress={this.handleClick}>Start point App.js CUCK</Text>
-        <FontAwesome icon={SolidIcons.child} />
-      </View>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="home" component={Home} options={{title: "BobNative"}} />
+          <Stack.Screen name="settings" component={Settings} options={{title: "BobNative"}} />
+        </Stack.Navigator>
+      </NavigationContainer>
     );
   }
   
