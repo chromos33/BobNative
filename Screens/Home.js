@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, Alert,TextInput,FlatList,Animated } from 'react-native';
+import { StyleSheet, Text, View, Alert,TextInput,FlatList,Animated, Dimensions } from 'react-native';
 import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
 import { loadAsync } from 'expo-font';
@@ -17,15 +17,18 @@ export default class Home extends Component {
     this.NavOnLayout = this.NavOnLayout.bind(this);
     this.onDragStart = this.onDragStart.bind(this);
     this.onDragStop = this.onDragStop.bind(this);
+    this.handleAnimation = this.handleAnimation.bind(this);
+    const windowWidth = Dimensions.get('window').width;
     this.state = {
       Text: "Test",
       FontLoaded: false,
-      posX: 0,
+      posX: new Animated.Value(0),
+      posX2: new Animated.Value(-windowWidth),
       startXDrag: 0,
-      screenHeight: 0,
-      screenWidth:0,
+      screenWidth:windowWidth,
       NavWidth: 0,
       Mode : 0,
+      NavOpen: false,
       Items:[
         {key: 'David'},
         {key: 'David1'},
@@ -33,48 +36,79 @@ export default class Home extends Component {
         ]
     };
   }
+  handleAnimation(e)
+  {
+    console.log("test");
+    if(this.state.NavOpen == true)
+    {
+      this.setState({
+        NavOpen: false
+      });
+      Animated.timing(this.state.posX,{
+        toValue:this.state.screenWidth - 40,
+        duration:500
+      }).start();
+      Animated.timing(this.state.posX2,{
+        toValue:0,
+        duration:500
+      }).start();
+    }
+    else{
+      this.setState({
+        NavOpen: true
+      });
+      Animated.timing(this.state.posX,{
+        toValue:0,
+        duration:500
+      }).start();
+      Animated.timing(this.state.posX2,{
+        toValue:-this.state.screenWidth,
+        duration:500
+      }).start();
+    }
+    
+  }
   handleMove(e)
   {
     console.log(e);
   }
-  getStyles()
+  getStyles(element)
   {
-    return StyleSheet.create({
-      container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      navbar:{
-        height: "100%",
-        width: 40,
-        position: "absolute",
-        top:0,
-        left: this.state.posX,
-        backgroundColor: '#ff0000',
-      },
-      nav:{
-        height: "100%",
-        width: this.state.screenWidth,
-        position: "absolute",
-        top:0,
-        left: this.state.posX - this.state.screenWidth,
-        backgroundColor: '#ffff00',
-      },
-      icon: {
-        fontSize: 60
-      },
-      box: {
-        borderStyle: 'solid',
-        borderWidth: 1,
-        borderColor : 'black',
-        paddingTop:5,
-        paddingRight:10,
-        paddingBottom:5,
-        paddingLeft:10,
-      }
-    });
+    switch(element)
+    {
+      case "container":
+        return {
+            flex: 1,
+            backgroundColor: '#fff',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop:25,
+          };
+      case "navbar":
+        return {
+          height: "100%",
+          width: 40,
+          position: "absolute",
+          top:0,
+          left: this.state.posX,
+          backgroundColor: '#ff0000',
+          zIndex:2
+          };
+      case "nav":
+        return {
+          height: "100%",
+          width: this.state.screenWidth,
+          position: "absolute",
+          top:0,
+          left: this.state.posX2,
+          backgroundColor: '#ffff00',
+          zIndex:2
+          };
+      case "icon":
+        return {
+          fontSize: 60
+          };
+    }
   }
   async componentDidMount() {
     
@@ -131,13 +165,16 @@ export default class Home extends Component {
   }
   onDragStart(e)
   {
+    /*
     this.setState({
       startXDrag: e.nativeEvent.pageX,
       Mode: 1
     });
+    */
   }
   onDragStop(e)
   {
+    /*
     this.setState({
       Mode: 0
     });
@@ -149,23 +186,24 @@ export default class Home extends Component {
     {
       //close
     }
+    */
   }
   render(){
     if(this.state.FontLoaded === false)
     {
       return (
-        <View style={this.getStyles().container}>
+        <View style={this.getStyles("container")}>
           <Text>Loading</Text>
         </View>
       );
     }
     return (
-      <View onLayout={this.IconLayout} style={this.getStyles().container}>
-      <Animated.View style={this.getStyles().nav}/>
-      <Animated.View onLayout={this.NavOnLayout} onTouchEnd={this.onDragStop} onTouchStart={this.onDragStart} onMoveShouldSetResponderCapture={this.handleDrag} style={this.getStyles().navbar}/>
+      <View onLayout={this.IconLayout} style={this.getStyles("container")}>
+      <Animated.View style={this.getStyles("nav")}/>
+      <Animated.View onLayout={this.NavOnLayout} onTouchEnd={this.onDragStop} onPress={this.handleAnimation} onTouchStart={this.handleAnimation} onMoveShouldSetResponderCapture={this.handleDrag} style={this.getStyles("navbar")}/>
       
         <Text onPress={this.handleClick}>Blub asdf</Text>
-        <FontAwesome onTouchStart={this.handleDragStart} icon={SolidIcons.child} style={this.getStyles().icon}/>
+        <FontAwesome onTouchStart={this.handleDragStart} icon={SolidIcons.child} style={this.getStyles("icon")}/>
       </View>
     );
   }

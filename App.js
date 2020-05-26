@@ -32,7 +32,7 @@ export default class App extends Component {
     const Stack = createStackNavigator();
     return (
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="home" component={Home} options={{title: "BobNative"}} />
           <Stack.Screen name="settings" component={Settings} options={{title: "BobNative"}} />
         </Stack.Navigator>
