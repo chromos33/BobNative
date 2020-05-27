@@ -3,12 +3,46 @@ import 'react-native-gesture-handler';
 import { StyleSheet, Text, View, Alert,TextInput,FlatList,Animated, Dimensions } from 'react-native';
 import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
 import { NavigationContainer, StackActions } from '@react-navigation/native';
+import PouchDB from 'pouchdb-core';
 import { loadAsync } from 'expo-font';
 
 export default class Home extends Component {
   constructor(props)
   {
     super(props);
+    PouchDB.plugin(require('pouchdb-adapter-asyncstorage').default);
+    const db = PouchDB("BobNative",{adapter: 'asyncstorage'});
+    //Insert document
+    /*
+    var doc = {
+      "_id": "test",
+      "name": "test",
+      "login": "chromos33",
+      "pass": "kermit22"
+    };
+    db.put(doc);
+    */
+    //Update Document
+    db.get("test").then(function(doc){
+      return doc._rev;
+    }).then(function(rev){
+      db.put({_id: "test", login: "chromos66",_rev: rev})
+      return undefined;
+    }).then(function(test){
+      db.get("test").then(function(doc){
+        console.log(doc);
+      });
+    }).catch(function(err){
+      console.log(err);
+    });
+
+
+    //Get Document
+   /*
+    db.get("test").then(function(doc){
+      console.log(doc);
+    });*/
+    
     this.handleClick = this.handleClick.bind(this);
     this.handleTextChange = this.handleTextChange.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
