@@ -77,7 +77,7 @@ export default class Settings extends Component {
     }
     return (
       <View style={this.getStyles().container}>
-        <Text>Settings</Text>
+        <Text>Settings 1</Text>
       </View>
     );
   }

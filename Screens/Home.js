@@ -26,6 +26,7 @@ export default class Home extends Component {
     db.get("test").then(function(doc){
       return doc._rev;
     }).then(function(rev){
+      //try to put doc from previous get function and update there and put changed...
       db.put({_id: "test", login: "chromos66",_rev: rev})
       return undefined;
     }).then(function(test){
