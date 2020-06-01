@@ -73,7 +73,6 @@ export default class Home extends Component {
   }
   handleAnimation(e)
   {
-    console.log("test");
     if(this.state.NavOpen == true)
     {
       this.setState({

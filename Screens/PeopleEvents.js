@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, Alert,TextInput,FlatList,Animated, Dimensions } from 'react-native';
-import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
-import PouchDB from 'pouchdb-core';
-import { loadAsync } from 'expo-font';
+import { Text, View, FlatList,Animated} from 'react-native';
 import PeopleEvent from '../Interface/Event'
 
 export default class PeopleEvents extends Component {
@@ -78,14 +74,12 @@ export default class PeopleEvents extends Component {
   render(){
     if(this.state.Events != null)
     {
-      var key = 0;
-      const Events = this.state.Events.map(function(event){
-        key++;
-        return <PeopleEvent key={key} data={event} />;
-      });
       return (
         <View style={this.getStyles("container")}>
-          {Events}
+          <FlatList
+            data={this.state.Events}
+            renderItem={({ item }) => <PeopleEvent data={item}/>}
+          /> 
         </View>
       );
     }

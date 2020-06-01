@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, FlatList, Animated, Dimensions } from 'react-native';
-import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
-
-import PouchDB from 'pouchdb-core';
-import { loadAsync } from 'expo-font';
+import { Text, View, Animated } from 'react-native';
+import Appointment from '../Interface/Appointment'
 
 export default class PeopleEvent extends Component {
     constructor(props) {
@@ -16,12 +13,12 @@ export default class PeopleEvent extends Component {
             AccordionOpenHeight: 0,
             AccordionHeight: new Animated.Value(0),
             AccordionState: "Closed",
-            Inited: false
+            Inited: false,
+            Appointments: null
         };
     }
     async componentDidMount() {
-        /*
-      var Result = await fetch("http://192.168.50.108:5001/Events/OverViewData",{
+      var Result = await fetch("http://192.168.50.108:5001/Events/GetEventDates/"+this.props.data.id,{
           method: 'POST',
           headers: {
             Accept: 'application/json',
@@ -31,13 +28,11 @@ export default class PeopleEvent extends Component {
         }).then((response) => {
           return response.json();
         }).then((json) => {
-          return json.calendars;
+          return json;
         })
         .catch((error) => {
         });
-        this.setState({Events: Result});
-        console.log(Result);
-        */
+        this.setState({Appointments: Result});
     }
     getStyles(element) {
         switch (element) {
@@ -48,7 +43,7 @@ export default class PeopleEvent extends Component {
                     opacity = 1;
                 }
                 return {
-                    backgroundColor: '#ff0000',
+                    backgroundColor: '#272c2e',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 5,
@@ -73,13 +68,15 @@ export default class PeopleEvent extends Component {
     getAccordionStyle() {
         if (!this.state.Inited) {
             return {
-                overflow: "hidden"
+                overflow: "hidden",
+                width:"100%"
             };
         }
         else {
             return {
                 height: this.state.AccordionHeight,
-                overflow: "hidden"
+                overflow: "hidden",
+                width:"100%"
             };
         }
         
@@ -110,14 +107,28 @@ export default class PeopleEvent extends Component {
     }
 
     render() {
-        return (
-            <View style={this.getStyles("container")}>
-                <Text onPress={this.handleAccordionOpen} style={this.getStyles("AccordionOpener")}>{this.props.data.name}</Text>
-                <Animated.View onLayout={this.saveHeight} style={this.getStyles("AccordionContent")}>
-                    <Text>asdfd</Text>
-                </Animated.View>
-            </View>
-        );
+        if(this.state.Appointments != null && this.state.Appointments.Header != undefined)
+        {
+            var i = 0;
+            const Appointments = this.state.Appointments.Header.map(function(AppointmentData){
+                i++;
+                return <Appointment key={i} date={AppointmentData.Date} time={AppointmentData.Time} Requests={AppointmentData.Requests}></Appointment>;
+            })
+            
+            return (
+                <View style={this.getStyles("container")}>
+                    <Text onPress={this.handleAccordionOpen} style={this.getStyles("AccordionOpener")}>{this.props.data.name}</Text>
+                    <Animated.View onLayout={this.saveHeight} style={this.getStyles("AccordionContent")}>
+                        {Appointments}
+                    </Animated.View>
+                </View>
+            );
+        }
+        else
+        {
+            return null;
+        }
+        
     }
 
 }
