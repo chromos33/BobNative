@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import { Text, View, Animated } from 'react-native';
+import { Text, View, Animated, TouchableOpacity  } from 'react-native';
 import Appointment from '../Interface/Appointment'
+import FontAwesome, { SolidIcons } from 'react-native-fontawesome';
 
 export default class PeopleEvent extends Component {
     constructor(props) {
@@ -18,28 +19,27 @@ export default class PeopleEvent extends Component {
         };
     }
     async componentDidMount() {
-      var Result = await fetch("http://192.168.50.108:5001/Events/GetEventDates/"+this.props.data.id,{
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            
-          }
+        var Result = await fetch("https://bob.sauercloud.net/Events/GetEventDates/" + this.props.data.id, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+
+            }
         }).then((response) => {
-          return response.json();
+            return response.json();
         }).then((json) => {
-          return json;
+            return json;
         })
-        .catch((error) => {
-        });
-        this.setState({Appointments: Result});
+            .catch((error) => {
+            });
+        this.setState({ Appointments: Result });
     }
     getStyles(element) {
         switch (element) {
             case "container":
                 let opacity = 0;
-                if(this.state.Inited)
-                {
+                if (this.state.Inited) {
                     opacity = 1;
                 }
                 return {
@@ -59,27 +59,40 @@ export default class PeopleEvent extends Component {
                     paddingRight: 10,
                     backgroundColor: '#272c2e',
                     color: "#BAC6D1",
-                    alignSelf: "stretch"
+                    alignSelf: "stretch",
+                    position: "relative",
+                    flex: 1,
+                    flexDirection: "row"
+                };
+            case "AccordionOpenerText":
+                return {
+                    color: "#BAC6D1"
                 };
             case "AccordionContent":
                 return this.getAccordionStyle();
+            case "icon":
+                return {
+                    color: "#BAC6D1",
+                    marginLeft: "auto"
+                };
+
         }
     }
     getAccordionStyle() {
         if (!this.state.Inited) {
             return {
                 overflow: "hidden",
-                width:"100%"
+                width: "100%"
             };
         }
         else {
             return {
                 height: this.state.AccordionHeight,
                 overflow: "hidden",
-                width:"100%"
+                width: "100%"
             };
         }
-        
+
     }
     saveHeight(e) {
         if (!this.state.Inited) {
@@ -91,14 +104,14 @@ export default class PeopleEvent extends Component {
     }
     handleAccordionOpen(e) {
         if (this.state.AccordionState === "Closed") {
-            this.setState({AccordionState: "Open"});
+            this.setState({ AccordionState: "Open" });
             Animated.timing(this.state.AccordionHeight, {
                 toValue: this.state.AccordionOpenHeight,
                 duration: 100
             }).start();
         }
         else {
-            this.setState({AccordionState: "Closed"});
+            this.setState({ AccordionState: "Closed" });
             Animated.timing(this.state.AccordionHeight, {
                 toValue: 0,
                 duration: 100
@@ -107,28 +120,32 @@ export default class PeopleEvent extends Component {
     }
 
     render() {
-        if(this.state.Appointments != null && this.state.Appointments.Header != undefined)
-        {
+        if (this.state.Appointments != null && this.state.Appointments.Header != undefined) {
             var i = 0;
-            const Appointments = this.state.Appointments.Header.map(function(AppointmentData){
+            const Appointments = this.state.Appointments.Header.map(function (AppointmentData) {
                 i++;
                 return <Appointment key={i} date={AppointmentData.Date} time={AppointmentData.Time} Requests={AppointmentData.Requests}></Appointment>;
             })
-            
+
             return (
                 <View style={this.getStyles("container")}>
-                    <Text onPress={this.handleAccordionOpen} style={this.getStyles("AccordionOpener")}>{this.props.data.name}</Text>
+                    <TouchableOpacity  onPress={this.handleAccordionOpen} style={this.getStyles("AccordionOpener")}>
+                        <Text style={this.getStyles("AccordionOpenerText")}>{this.props.data.name}</Text>
+                        {this.state.AccordionState == "Closed" && <FontAwesome icon={SolidIcons.chevronDown} style={this.getStyles("icon")} />}
+                        {this.state.AccordionState == "Open" && <FontAwesome icon={SolidIcons.chevronUp} style={this.getStyles("icon")} />}
+
+                    </TouchableOpacity>
+
                     <Animated.View onLayout={this.saveHeight} style={this.getStyles("AccordionContent")}>
                         {Appointments}
                     </Animated.View>
                 </View>
             );
         }
-        else
-        {
+        else {
             return null;
         }
-        
+
     }
 
 }

@@ -3,9 +3,7 @@
     "name": "BobNative",
     "slug": "BobNative",
     "platforms": [
-      "ios",
-      "android",
-      "web"
+      "android"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,7 +11,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#BAC6D1"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,8 +19,10 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
+    "description": "Bob App",
+    "android": {
+      "package": "com.Deathmic.Bob",
+      "versionCode": 1
     }
   }
 }

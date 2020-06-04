@@ -92,7 +92,8 @@ export default class Login extends Component {
   {
     if(this.state.Login !== "" && this.state.Password != "")
     {
-      var loginResult = await fetch("http://192.168.50.108:5001/Main/LoginMobile",{
+      //var loginResult = await fetch("http://192.168.50.108:5001/Main/LoginMobile",{
+      var loginResult = await fetch("https://bob.sauercloud.net/Main/LoginMobile",{
         method: 'POST',
         headers: {
           Accept: 'application/json',

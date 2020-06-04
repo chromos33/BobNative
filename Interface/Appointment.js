@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import { StyleSheet, FlatList, Text, View, Animated, TouchableOpacity } from 'react-native';
-import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
+import { Text, View, TouchableOpacity } from 'react-native';
+import FontAwesome, { SolidIcons } from 'react-native-fontawesome';
 
 import PouchDB from 'pouchdb-core';
 import { loadAsync } from 'expo-font';
@@ -19,7 +19,15 @@ export default class Appointment extends Component {
         }
     }
     async componentDidMount() {
+        var _this = this;
+        this.props.Requests.map(function (request) {
 
+            if (request.canEdit) {
+                if (_this.state.ownAppointmentRequest === undefined) {
+                    _this.setState({ ownAppointmentRequest: request });
+                }
+            }
+        });
     }
     getStyles(element) {
         switch (element) {
@@ -147,18 +155,37 @@ export default class Appointment extends Component {
             this.syncToServer();
         }
     }
-    syncToServer() {
-        console.log("Sync");
+    async syncToServer() {
+        var getParameters = "";
+        var comment = this.state.ownAppointmentRequest.Comment;
+        if(comment == null)
+        {
+            comment = "";
+        }
+        getParameters += "?requestID="+this.state.ownAppointmentRequest.AppointmentRequestID;
+        getParameters += "&state="+this.state.ownAppointmentRequest.States[this.state.ownAppointmentRequest.State];
+        getParameters += "&comment="+comment;
+        var Result = await fetch("https://bob.sauercloud.net/Events/UpdateRequestState"+ getParameters,{
+          method: 'GET',
+          headers: {
+             Accept: "application/x-www-form-urlencoded",
+            'Content-Type': 'application/json',
+            
+          }
+        }).then((response) => {
+          return response.text();
+        }).then((text) => {
+          return text;
+        })
+        .catch((error) => {
+        });
     }
     render() {
         var _this = this;
         const VoteView = this.props.Requests.map(function (request) {
 
             if (request.canEdit) {
-                if (_this.state.ownAppointmentRequest === undefined) {
-                    _this.setState({ ownAppointmentRequest: request });
-                }
-                return <View style={_this.getStyles("votecontainer")}>
+                return <View key={1} style={_this.getStyles("votecontainer")}>
                     <TouchableOpacity key={0} onPress={_this.changeToUnvoted} style={_this.getVoteStyle(0, request.State)}>
                         <FontAwesome icon={SolidIcons.minus} style={_this.getStyles("icon")} />
                     </TouchableOpacity>

@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import 'react-native-gesture-handler';
-import { Text, View, FlatList,Animated} from 'react-native';
+import { Text, View, FlatList,Animated,SafeAreaView} from 'react-native';
 import PeopleEvent from '../Interface/Event'
+import { ScrollView } from 'react-native-gesture-handler';
+import Navi from '../Interface/Navi';
 
 export default class PeopleEvents extends Component {
   constructor(props)
   {
     super(props);
+    this.refresh = this.refresh.bind(this);
     this.state = {
       "Events": null
     }
   }
   async componentDidMount()
   {
-    var Result = await fetch("http://192.168.50.108:5001/Events/OverViewData",{
+    var Result = await fetch("https://bob.sauercloud.net/Events/OverViewData",{
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -39,7 +42,6 @@ export default class PeopleEvents extends Component {
             backgroundColor: '#485358',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            marginTop:25,
             alignItems: "flex-start",
             flexDirection: "column",
             flexWrap: "wrap",
@@ -68,19 +70,37 @@ export default class PeopleEvents extends Component {
         return {
           fontSize: 60
           };
+      case "safetybar":
+        return {
+          height:25,
+          width:"100%",
+          backgroundColor:"#ffffff",
+          zIndex:100
+        }
+      case "Navi":
+        return{
+          zIndex:0,
+          width: "100%"
+        }
     }
   }
- 
+  refresh(e)
+  {
+
+  }
   render(){
     if(this.state.Events != null)
     {
       return (
-        <View style={this.getStyles("container")}>
-          <FlatList
-            data={this.state.Events}
-            renderItem={({ item }) => <PeopleEvent data={item}/>}
-          /> 
-        </View>
+        <SafeAreaView style={this.getStyles("container")}>
+          <View style={this.getStyles("safetybar")}/>
+          <Navi style={this.getStyles("Navi")}/>
+            <FlatList onRefresh={this.refresh} refreshing={false}
+              data={this.state.Events}
+              renderItem={({ item }) => <PeopleEvent data={item}/>}
+            /> 
+        </SafeAreaView>
+        
       );
     }
     else
